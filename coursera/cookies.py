@@ -3,58 +3,17 @@
 """
 Cookie handling module.
 """
-
 import logging
 import os
 import ssl
-
+from http.cookiejar import MozillaCookieJar
+from io import StringIO
 import requests
 from requests.adapters import HTTPAdapter
+from urllib3.poolmanager import PoolManager
 
-try:  # Workaround for broken Debian/Ubuntu packages? (See issue #331)
-    from requests.packages.urllib3.poolmanager import PoolManager
-except ImportError:
-    from urllib3.poolmanager import PoolManager
-
-
-from six.moves import StringIO
-from six.moves import http_cookiejar as cookielib
 from .define import CLASS_URL, AUTH_REDIRECT_URL, PATH_COOKIES, AUTH_URL_V3
 from .utils import mkdir_p, random_string
-
-# Monkey patch cookielib.Cookie.__init__.
-# Reason: The expires value may be a decimal string,
-# but the Cookie class uses int() ...
-__original_init__ = cookielib.Cookie.__init__
-
-
-def __fixed_init__(self, version, name, value,
-                   port, port_specified,
-                   domain, domain_specified, domain_initial_dot,
-                   path, path_specified,
-                   secure,
-                   expires,
-                   discard,
-                   comment,
-                   comment_url,
-                   rest,
-                   rfc2109=False):
-    if expires is not None:
-        expires = float(expires)
-    __original_init__(self, version, name, value,
-                     port, port_specified,
-                     domain, domain_specified, domain_initial_dot,
-                     path, path_specified,
-                     secure,
-                     expires,
-                     discard,
-                     comment,
-                     comment_url,
-                     rest,
-                     rfc2109=False)
-
-
-cookielib.Cookie.__init__ = __fixed_init__
 
 
 class ClassNotFound(BaseException):
@@ -295,7 +254,7 @@ def load_cookies_file(cookies_file):
 
 
 def get_cookie_jar(cookies_file):
-    cj = cookielib.MozillaCookieJar()
+    cj = MozillaCookieJar()
     cookies = load_cookies_file(cookies_file)
 
     # nasty hack: cj.load() requires a filename not a file, but if I use
@@ -341,7 +300,7 @@ def write_cookies_to_cache(cj, username):
     """
     mkdir_p(PATH_COOKIES, 0o700)
     path = get_cookies_cache_path(username)
-    cached_cj = cookielib.MozillaCookieJar()
+    cached_cj = MozillaCookieJar()
     for cookie in cj:
         cached_cj.set_cookie(cookie)
     cached_cj.save(path)

@@ -18,8 +18,6 @@ import time
 
 import requests
 
-from six import iteritems
-
 #
 # Below are file downloaders, they are wrappers for external downloaders.
 #
@@ -398,9 +396,9 @@ def get_downloader(session, class_name, args):
         'axel': AxelDownloader,
     }
 
-    for bin, class_ in iteritems(external):
-        if getattr(args, bin):
-            return class_(session, bin=getattr(args, bin),
+    for bin_name, class_ in external.items():
+        if getattr(args, bin_name):
+            return class_(session, bin=getattr(args, bin_name),
                           downloader_arguments=args.downloader_arguments)
 
     return NativeDownloader(session)
