@@ -9,12 +9,10 @@ import os.path
 
 import pytest
 
-from six import iteritems
 from mock import patch, Mock, mock_open
 
 from coursera import coursera_dl
 from coursera import api
-from coursera.define import IN_MEMORY_EXTENSION, IN_MEMORY_MARKER
 
 
 # JSon Handling
@@ -118,7 +116,7 @@ def test_parse(get_old_style_video, filename, num_sections, num_lectures,
 
         # resource count
         resources = [(res[0], len(res[1]))
-                     for lec in lectures for res in iteritems(lec[1])]
+                     for lec in lectures for res in lec[1].items()]
         assert sum(r for f, r in resources) == num_resources
 
         # mp4 count

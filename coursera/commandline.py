@@ -11,7 +11,6 @@ import configargparse as argparse
 from coursera import __version__
 
 from .credentials import get_credentials, CredentialsError, keyring
-from .utils import decode_input
 
 LOCAL_CONF_FILE_NAME = 'coursera-dl.conf'
 
@@ -484,7 +483,7 @@ def parse_args(args=None):
 
     # decode path so we can work properly with cyrillic symbols on different
     # versions on Python
-    args.path = decode_input(args.path)
+    args.path = args.path
 
     # check arguments
     if args.use_keyring and args.password:

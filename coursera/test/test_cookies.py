@@ -6,8 +6,9 @@ Test syllabus parsing.
 """
 
 import os.path
+from http.cookiejar import MozillaCookieJar
+
 import requests
-from six.moves import http_cookiejar as cookielib
 
 from coursera import cookies
 
@@ -46,12 +47,12 @@ class MockSession:
 
 def test_get_cookiejar_from_firefox_cookies():
     cj = cookies.get_cookie_jar(FIREFOX_COOKIES)
-    assert isinstance(cj, cookielib.MozillaCookieJar)
+    assert isinstance(cj, MozillaCookieJar)
 
 
 def test_get_cookiejar_from_chrome_cookies():
     cj = cookies.get_cookie_jar(CHROME_COOKIES)
-    assert isinstance(cj, cookielib.MozillaCookieJar)
+    assert isinstance(cj, MozillaCookieJar)
 
 
 def test_find_cookies_for_class():
